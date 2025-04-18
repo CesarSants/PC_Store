@@ -19,11 +19,13 @@ const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
         if (containerRef.current) {
             const container = containerRef.current;
             const content = container.children[0];
-            const hasHorizontalOverflow = content.scrollWidth > container.clientWidth + 2;
+            const hasHorizontalOverflow = content.scrollWidth > container.clientWidth + 1;
             setHasOverflow(hasHorizontalOverflow);
             
+            // container.style.overflowX = hasHorizontalOverflow ? 'auto' : 'hidden';
+            // container.style.pointerEvents = hasHorizontalOverflow ? 'auto' : 'none';
             container.style.overflowX = hasHorizontalOverflow ? 'auto' : 'hidden';
-            container.style.pointerEvents = hasHorizontalOverflow ? 'auto' : 'none';
+            container.style.touchAction = hasHorizontalOverflow ? 'auto' : 'none';
         }
         };
 
