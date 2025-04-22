@@ -153,17 +153,33 @@ const Cart = () => {
   // };
 
   useEffect(() => {
-    const channel = new BroadcastChannel('payment-success');
-    
-    channel.onmessage = (event) => {
-      console.log("[Cart] Payment success event received");
-      clearCart();
-      toast.success("Pagamento realizado com sucesso!");
+    // Verificar mudança de status do pedido periodicamente
+    const checkOrderStatus = () => {
+      const pendingOrderId = localStorage.getItem("@pc-store/pending-order");
+      
+      if (pendingOrderId) {
+        // Limpar carrinho se houver um pedido pendente
+        clearCart();
+        localStorage.removeItem("@pc-store/pending-order");
+      }
     };
 
-    return () => {
-      channel.close();
-    };
+    // Tentar usar BroadcastChannel primeiro
+    try {
+      const channel = new BroadcastChannel('payment-success');
+      
+      channel.onmessage = (event) => {
+        console.log("[Cart] Payment success event received");
+        clearCart();
+        toast.success("Pagamento realizado com sucesso!");
+      };
+
+      return () => channel.close();
+    } catch (error) {
+      // Fallback para polling se BroadcastChannel não estiver disponível
+      const interval = setInterval(checkOrderStatus, 2000);
+      return () => clearInterval(interval);
+    }
   }, [clearCart]);
 
   const handleFinishPurchaseClick = async () => {
@@ -178,6 +194,8 @@ const Cart = () => {
       const order = await createOrder(products, (data?.user as any).id);
       const checkout = await createCheckout(products, order.id);
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+
+      localStorage.setItem("@pc-store/pending-order", order.id);
 
       // Se algo der errado no redirecionamento, o botão será habilitado novamente
       const result = await stripe?.redirectToCheckout({
