@@ -1,51 +1,3 @@
-// import { prismaClient } from "@/lib/prisma";
-// import { NextResponse } from "next/server";
-// import Stripe from "stripe";
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-//   apiVersion: "2025-03-31.basil",
-// });
-
-// export const POST = async (request: Request) => {
-//   const signature = request.headers.get("stripe-signature");
-
-//   if (!signature) {
-//     return NextResponse.error();
-//   }
-
-//   const text = await request.text();
-
-//   const event = stripe.webhooks.constructEvent(
-//     text,
-//     signature,
-//     process.env.STRIPE_WEBHOOK_SECRET_KEY,
-//   );
-
-//   if (event.type === "checkout.session.completed") {
-//     const session = event.data.object as any;
-
-//     const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
-//       event.data.object.id,
-//       {
-//         expand: ["line_items"],
-//       },
-//     );
-//     const lineItems = sessionWithLineItems.line_items;
-
-//     // ATUALIZAR PEDIDO
-//     await prismaClient.order.update({
-//       where: {
-//         id: session.metadata.orderId,
-//       },
-//       data: {
-//         status: "PAYMENT_CONFIRMED",
-//       },
-//     });
-//   }
-
-//   return NextResponse.json({ received: true });
-// };
-
 import { prismaClient } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -55,52 +7,100 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export const POST = async (request: Request) => {
-  try {
-    const signature = request.headers.get("stripe-signature");
-    console.log("[Webhook] Received request");
+  const signature = request.headers.get("stripe-signature");
 
-    if (!signature) {
-      console.error("[Webhook] No signature found");
-      return NextResponse.error();
-    }
-
-    const text = await request.text();
-    const event = stripe.webhooks.constructEvent(
-      text,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET_KEY,
-    );
-
-    console.log("[Webhook] Event type:", event.type);
-
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object as any;
-      console.log("[Webhook] Processing order:", session.metadata.orderId);
-
-      await prismaClient.order.update({
-        where: {
-          id: session.metadata.orderId,
-        },
-        data: {
-          status: "PAYMENT_CONFIRMED",
-        },
-      });
-
-      // Emitir broadcast para limpar o carrinho
-      const broadcast = new BroadcastChannel('payment-success');
-      broadcast.postMessage({ 
-        orderId: session.metadata.orderId,
-        success: true 
-      });
-      broadcast.close();
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("[Webhook] Error:", error);
+  if (!signature) {
     return NextResponse.error();
   }
+
+  const text = await request.text();
+
+  const event = stripe.webhooks.constructEvent(
+    text,
+    signature,
+    process.env.STRIPE_WEBHOOK_SECRET_KEY,
+  );
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object as any;
+
+    const sessionWithLineItems = await stripe.checkout.sessions.retrieve(
+      event.data.object.id,
+      {
+        expand: ["line_items"],
+      },
+    );
+    const lineItems = sessionWithLineItems.line_items;
+
+    // ATUALIZAR PEDIDO
+    await prismaClient.order.update({
+      where: {
+        id: session.metadata.orderId,
+      },
+      data: {
+        status: "PAYMENT_CONFIRMED",
+      },
+    });
+  }
+
+  return NextResponse.json({ received: true });
 };
+
+// import { prismaClient } from "@/lib/prisma";
+// import { NextResponse } from "next/server";
+// import Stripe from "stripe";
+
+// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+//   apiVersion: "2025-03-31.basil",
+// });
+
+// export const POST = async (request: Request) => {
+//   try {
+//     const signature = request.headers.get("stripe-signature");
+//     console.log("[Webhook] Received request");
+
+//     if (!signature) {
+//       console.error("[Webhook] No signature found");
+//       return NextResponse.error();
+//     }
+
+//     const text = await request.text();
+//     const event = stripe.webhooks.constructEvent(
+//       text,
+//       signature,
+//       process.env.STRIPE_WEBHOOK_SECRET_KEY,
+//     );
+
+//     console.log("[Webhook] Event type:", event.type);
+
+//     if (event.type === "checkout.session.completed") {
+//       const session = event.data.object as any;
+//       console.log("[Webhook] Processing order:", session.metadata.orderId);
+
+//       await prismaClient.order.update({
+//         where: {
+//           id: session.metadata.orderId,
+//         },
+//         data: {
+//           status: "PAYMENT_CONFIRMED",
+//         },
+//       });
+
+//       // Emitir broadcast para limpar o carrinho
+//       const broadcast = new BroadcastChannel('payment-success');
+//       broadcast.postMessage({ 
+//         orderId: session.metadata.orderId,
+//         success: true 
+//       });
+//       broadcast.close();
+//     }
+
+//     return NextResponse.json({ received: true });
+//   } catch (error) {
+//     console.error("[Webhook] Error:", error);
+//     return NextResponse.error();
+//   }
+// };
 
 // http://localhost:3000/api/order/payment-success
 

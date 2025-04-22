@@ -129,7 +129,7 @@ import "react-toastify/dist/ReactToastify.css";
 const Cart = () => {
   const { data } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { products, subtotal, total, totalDiscount, clearCart } = useContext(CartContext);
+  const { products, subtotal, total, totalDiscount } = useContext(CartContext);
 
   // const handleFinishPurchaseClick = async () => {
   //   if (!data?.user) {
@@ -152,35 +152,35 @@ const Cart = () => {
   //   }
   // };
 
-  useEffect(() => {
-    // Verificar mudança de status do pedido periodicamente
-    const checkOrderStatus = () => {
-      const pendingOrderId = localStorage.getItem("@pc-store/pending-order");
+  // useEffect(() => {
+  //   // Verificar mudança de status do pedido periodicamente
+  //   const checkOrderStatus = () => {
+  //     const pendingOrderId = localStorage.getItem("@pc-store/pending-order");
       
-      if (pendingOrderId) {
-        // Limpar carrinho se houver um pedido pendente
-        clearCart();
-        localStorage.removeItem("@pc-store/pending-order");
-      }
-    };
+  //     if (pendingOrderId) {
+  //       // Limpar carrinho se houver um pedido pendente
+  //       clearCart();
+  //       localStorage.removeItem("@pc-store/pending-order");
+  //     }
+  //   };
 
-    // Tentar usar BroadcastChannel primeiro
-    try {
-      const channel = new BroadcastChannel('payment-success');
+  //   // Tentar usar BroadcastChannel primeiro
+  //   try {
+  //     const channel = new BroadcastChannel('payment-success');
       
-      channel.onmessage = (event) => {
-        console.log("[Cart] Payment success event received");
-        clearCart();
-        toast.success("Pagamento realizado com sucesso!");
-      };
+  //     channel.onmessage = (event) => {
+  //       console.log("[Cart] Payment success event received");
+  //       clearCart();
+  //       toast.success("Pagamento realizado com sucesso!");
+  //     };
 
-      return () => channel.close();
-    } catch (error) {
-      // Fallback para polling se BroadcastChannel não estiver disponível
-      const interval = setInterval(checkOrderStatus, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [clearCart]);
+  //     return () => channel.close();
+  //   } catch (error) {
+  //     // Fallback para polling se BroadcastChannel não estiver disponível
+  //     const interval = setInterval(checkOrderStatus, 2000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [clearCart]);
 
   const handleFinishPurchaseClick = async () => {
     if (!data?.user) {
@@ -189,7 +189,7 @@ const Cart = () => {
     }
 
     try {
-      setIsLoading(true); // Desabilita o botão
+      setIsLoading(true);
 
       const order = await createOrder(products, (data?.user as any).id);
       const checkout = await createCheckout(products, order.id);
