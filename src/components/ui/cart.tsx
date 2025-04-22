@@ -125,11 +125,12 @@ import { createOrder } from "@/actions/order";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fi } from "date-fns/locale";
 
 const Cart = () => {
   const { data } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const { products, subtotal, total, totalDiscount } = useContext(CartContext);
+  const { products, subtotal, total, totalDiscount, clearCart } = useContext(CartContext);
 
   // const handleFinishPurchaseClick = async () => {
   //   if (!data?.user) {
@@ -188,16 +189,14 @@ const Cart = () => {
       return;
     }
 
+    let redirectSuccessful = false;
+
     try {
       setIsLoading(true);
 
       const order = await createOrder(products, (data?.user as any).id);
       const checkout = await createCheckout(products, order.id);
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
-
-      localStorage.setItem("@pc-store/pending-order", order.id);
-
-      // Se algo der errado no redirecionamento, o botão será habilitado novamente
       const result = await stripe?.redirectToCheckout({
         sessionId: checkout.id,
       });
@@ -205,10 +204,18 @@ const Cart = () => {
       if (result?.error) {
         throw new Error(result.error.message);
       }
+
+      redirectSuccessful = true;
+
     } catch (error) {
       console.error(error);
       toast.error("Erro ao processar a compra");
-      setIsLoading(false); // Reabilita o botão em caso de erro
+      setIsLoading(false);
+    }
+    finally {
+      if (redirectSuccessful) {
+        clearCart();
+      }
     }
   };
 
@@ -219,7 +226,6 @@ const Cart = () => {
         Carrinho
       </Badge>
 
-      {/* RENDERIZAR OS PRODUTOS */}
       <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
         <ScrollArea className="h-full">
           <div className="flex h-full flex-col gap-8">

@@ -173,7 +173,7 @@ interface ICartContext {
   decreaseProductQuantity: (productId: string) => void;
   increaseProductQuantity: (productId: string) => void;
   removeProductFromCart: (productId: string) => void;
-  // clearCart: () => void;
+  clearCart: () => void;
 }
 
 export const CartContext = createContext<ICartContext>({
@@ -188,7 +188,7 @@ export const CartContext = createContext<ICartContext>({
   decreaseProductQuantity: () => {},
   increaseProductQuantity: () => {},
   removeProductFromCart: () => {},
-  // clearCart: () => {},
+  clearCart: () => {},
 });
 
 const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -290,6 +290,10 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   //   localStorage.removeItem("@pc-store/cart-products");
   // };
 
+  const clearCart = () => {
+    setProducts([]);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -298,7 +302,7 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
         decreaseProductQuantity,
         increaseProductQuantity,
         removeProductFromCart,
-        // clearCart,
+        clearCart,
         total,
         subtotal,
         totalDiscount,
