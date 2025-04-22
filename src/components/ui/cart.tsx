@@ -132,6 +132,17 @@ const Cart = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { products, subtotal, total, totalDiscount, clearCart } = useContext(CartContext);
 
+  useEffect(() => {
+    // Verifica o parâmetro success na URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const isPaymentSuccess = searchParams.get('success') === 'true';
+    
+    if (isPaymentSuccess) {
+      clearCart();
+      toast.success('Compra realizada com sucesso!');
+    }
+  }, [clearCart]);
+
   // const handleFinishPurchaseClick = async () => {
   //   if (!data?.user) {
   //     // TODO: redirecionar para o login
@@ -189,7 +200,7 @@ const Cart = () => {
       return;
     }
 
-    let redirectSuccessful = false;
+    // let redirectSuccessful = false;
 
     try {
       setIsLoading(true);
@@ -205,18 +216,18 @@ const Cart = () => {
         throw new Error(result.error.message);
       }
 
-      redirectSuccessful = true;
+      // redirectSuccessful = true;
 
     } catch (error) {
       console.error(error);
       toast.error("Erro ao processar a compra");
       setIsLoading(false);
     }
-    finally {
-      if (redirectSuccessful) {
-        clearCart();
-      }
-    }
+    // finally {
+    //   if (redirectSuccessful) {
+    //     clearCart();
+    //   }
+    // }
   };
 
   return (
