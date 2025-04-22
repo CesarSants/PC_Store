@@ -135,11 +135,14 @@ const Cart = () => {
   useEffect(() => {
     // Verifica o parâmetro success na URL
     const searchParams = new URLSearchParams(window.location.search);
-    const isPaymentSuccess = searchParams.get('success') === 'true';
+    const sessionId = searchParams.get('session_id');
     
-    if (isPaymentSuccess) {
+    if (sessionId) {
       clearCart();
       toast.success('Compra realizada com sucesso!');
+
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
     }
   }, [clearCart]);
 

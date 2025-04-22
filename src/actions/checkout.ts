@@ -60,7 +60,7 @@ export const createCheckout = async (
     // cancel_url: `${process.env.HOST_URL}/cancel?orderId=${orderId}`,
     // success_url: process.env.HOST_URL,
     // cancel_url: process.env.HOST_URL,
-    success_url: `${process.env.HOST_URL}/orders?success=true`,
+    success_url: `${process.env.HOST_URL}/orders?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.HOST_URL}/orders`,
     metadata: {
       orderId,
