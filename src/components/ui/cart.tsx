@@ -112,7 +112,7 @@
 
 import { ShoppingCartIcon } from "lucide-react";
 import { Badge } from "./badge";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "@/providers/cart";
 import CartItem from "./cart-item";
 import { computeProductTotalPrice } from "@/helpers/product";
@@ -128,8 +128,43 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Cart = () => {
   const { data } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const { products, subtotal, total, totalDiscount, clearCart } = useContext(CartContext);
 
-  const { products, subtotal, total, totalDiscount } = useContext(CartContext);
+  // const handleFinishPurchaseClick = async () => {
+  //   if (!data?.user) {
+  //     // TODO: redirecionar para o login
+  //     return;
+  //   }
+
+  //   try {
+  //     const order = await createOrder(products, (data?.user as any).id);
+  //     const checkout = await createCheckout(products, order.id);
+
+  //     const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+
+  //     stripe?.redirectToCheckout({
+  //       sessionId: checkout.id,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Erro ao processar a compra");
+  //   }
+  // };
+
+  useEffect(() => {
+    const channel = new BroadcastChannel('payment-success');
+    
+    channel.onmessage = (event) => {
+      console.log("[Cart] Payment success event received");
+      clearCart();
+      toast.success("Pagamento realizado com sucesso!");
+    };
+
+    return () => {
+      channel.close();
+    };
+  }, [clearCart]);
 
   const handleFinishPurchaseClick = async () => {
     if (!data?.user) {
@@ -138,17 +173,24 @@ const Cart = () => {
     }
 
     try {
+      setIsLoading(true); // Desabilita o botão
+
       const order = await createOrder(products, (data?.user as any).id);
       const checkout = await createCheckout(products, order.id);
-
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
-      stripe?.redirectToCheckout({
+      // Se algo der errado no redirecionamento, o botão será habilitado novamente
+      const result = await stripe?.redirectToCheckout({
         sessionId: checkout.id,
       });
+
+      if (result?.error) {
+        throw new Error(result.error.message);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Erro ao processar a compra");
+      setIsLoading(false); // Reabilita o botão em caso de erro
     }
   };
 
@@ -215,6 +257,7 @@ const Cart = () => {
           <Button
             className="mt-7 font-bold uppercase"
             onClick={handleFinishPurchaseClick}
+            disabled={isLoading}
           >
             Finalizar compra
           </Button>
