@@ -290,9 +290,25 @@ const CartProvider = ({ children }: { children: ReactNode }) => {
   //   localStorage.removeItem("@pc-store/cart-products");
   // };
 
+  // const clearCart = () => {
+  //   setProducts([]);
+  // };
+
   const clearCart = () => {
     setProducts([]);
-  };
+    localStorage.removeItem("@pc-store/cart-products");
+    console.log("Carrinho limpo"); // Debug log
+};
+
+useEffect(() => {
+    // Sincroniza com localStorage sempre que products mudar
+    if (products.length === 0) {
+        localStorage.removeItem("@pc-store/cart-products");
+    } else {
+        localStorage.setItem("@pc-store/cart-products", JSON.stringify(products));
+    }
+    console.log("Products atualizado:", products); // Debug log
+}, [products]);
 
   return (
     <CartContext.Provider
