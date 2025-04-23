@@ -11,21 +11,35 @@ export function SessionHandler() {
     const searchParams = useSearchParams();
     const hasHandledSession = useRef(false);
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     const sessionId = searchParams.get('session_id');
+        
+    //     // Only handle session once to prevent infinite loop
+    //     if (sessionId && !hasHandledSession.current) {
+    //     clearCart();
+    //     toast.success('Compra realizada com sucesso!');
+        
+    //     // Mark as handled
+    //     hasHandledSession.current = true;
+        
+    //     // Use window.history instead of router.replace
+    //     window.history.replaceState({}, '', window.location.pathname);
+    //     }
+    // }, [searchParams, clearCart]);
+
+      useEffect(() => {
+        // Verifica o parâmetro success na URL
+        const searchParams = new URLSearchParams(window.location.search);
         const sessionId = searchParams.get('session_id');
         
-        // Only handle session once to prevent infinite loop
-        if (sessionId && !hasHandledSession.current) {
-        clearCart();
-        toast.success('Compra realizada com sucesso!');
-        
-        // Mark as handled
-        hasHandledSession.current = true;
-        
-        // Use window.history instead of router.replace
-        window.history.replaceState({}, '', window.location.pathname);
+        if (sessionId) {
+          clearCart();
+          toast.success('Compra realizada com sucesso!');
+    
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
         }
-    }, [searchParams, clearCart]);
+      }, [clearCart]);
 
     return null;
 }

@@ -132,19 +132,19 @@ const Cart = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { products, subtotal, total, totalDiscount, clearCart } = useContext(CartContext);
 
-  useEffect(() => {
-    // Verifica o parâmetro success na URL
-    const searchParams = new URLSearchParams(window.location.search);
-    const sessionId = searchParams.get('session_id');
+  // useEffect(() => {
+  //   // Verifica o parâmetro success na URL
+  //   const searchParams = new URLSearchParams(window.location.search);
+  //   const sessionId = searchParams.get('session_id');
     
-    if (sessionId) {
-      clearCart();
-      toast.success('Compra realizada com sucesso!');
+  //   if (sessionId) {
+  //     clearCart();
+  //     toast.success('Compra realizada com sucesso!');
 
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
-    }
-  }, [clearCart]);
+  //     const newUrl = window.location.pathname;
+  //     window.history.replaceState({}, '', newUrl);
+  //   }
+  // }, [clearCart]);
 
   // const handleFinishPurchaseClick = async () => {
   //   if (!data?.user) {
