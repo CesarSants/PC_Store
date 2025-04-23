@@ -50,8 +50,13 @@ async function WishListPage() {
         <Heart size={16} />
         Favoritos
       </Badge>
-      <div className="mt-4 grid grid-cols-2 gap-8">
+      {/* <div className="mt-4 grid grid-cols-2 gap-8">
         {wishlist.map((product) => (
+          <WishlistItem key={product.id} product={product} />
+        ))}
+      </div> */}
+      <div className="mt-4 grid grid-cols-2 gap-8"> 
+        {wishlist.slice().reverse().map((product) => (
           <WishlistItem key={product.id} product={product} />
         ))}
       </div>
