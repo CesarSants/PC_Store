@@ -275,7 +275,7 @@ const OrderItem = ({ order }: OrderItemProps) => {
             <div className="flex w-full text-left">
               <div className="flex flex-1 flex-col gap-1 text-left">
                 <p className="text-sm font-bold uppercase lg:text-base">
-                  Pedido com {order.orderProducts.length} produto(s)
+                Pedido com {order.orderProducts.length} {order.orderProducts.length === 1 ? 'produto' : 'produtos'}
                 </p>
                 <span className="text-xs opacity-60">
                   Feito em {format(order.createdAt, "d/MM/y 'às' HH:mm")}

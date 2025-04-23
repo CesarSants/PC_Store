@@ -58,7 +58,7 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-col gap-3 lg:gap-5">
-          <SectionTitle className="pl-5">Ofertas</SectionTitle>
+          <SectionTitle className="text-center">Ofertas</SectionTitle>
           <div className="relative w-full">
             <ScrollableContainer>
               <ProductList products={deals} />
@@ -85,7 +85,7 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-col gap-3 lg:gap-5">
-          <SectionTitle className="pl-5">Teclados</SectionTitle>
+          <SectionTitle className="text-center">Teclados</SectionTitle>
           <div className="relative w-full">
             <ScrollableContainer>
               <ProductList products={keyboards} />
@@ -112,7 +112,7 @@ export default async function Home() {
         </div>
 
         <div className="flex flex-col gap-3 lg:gap-5">
-          <SectionTitle className="pl-5">Mouses</SectionTitle>
+          <SectionTitle className="text-center">Mouses</SectionTitle>
           <div className="relative w-full">
             <ScrollableContainer>
               <ProductList products={mouses} />

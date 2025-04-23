@@ -125,7 +125,8 @@ import { createOrder } from "@/actions/order";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fi } from "date-fns/locale";
+import { fi, is } from "date-fns/locale";
+import LoadingButton from "./loading-button";
 
 const Cart = () => {
   const { data } = useSession();
@@ -292,13 +293,22 @@ const Cart = () => {
             <p>R$ {total.toFixed(2)}</p>
           </div>
 
-          <Button
+          {/* <Button
             className="mt-7 font-bold uppercase"
             onClick={handleFinishPurchaseClick}
             disabled={isLoading}
           >
             {isLoading ? 'Redirecionando' : 'Finalizar compra'}
-          </Button>
+          </Button> */}
+              <LoadingButton
+                loading={isLoading}
+                disabled={isLoading}
+                textWaiting="Redirecionando"
+                className="uppercase mt-7 font-bold"
+                onClick={handleFinishPurchaseClick}
+              >
+                Finalizar compra
+              </LoadingButton>
         </div>
       )}
     </div>

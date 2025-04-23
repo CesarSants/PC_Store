@@ -30,6 +30,9 @@ async function OrderPage() {
         },
       },
     },
+    orderBy: {
+      createdAt: 'desc' // 'desc' para mais recente primeiro, 'asc' para mais antigo
+    },
   });
 
   return (
@@ -39,7 +42,7 @@ async function OrderPage() {
         Meus Pedidos
       </Badge>
 
-      <div className="mt-5 flex-col-reverse flex gap-5">
+      <div className="mt-5 flex-col flex gap-5">
         {orders.map((order) => (
           <OrderItem key={order.id} order={order} />
         ))}

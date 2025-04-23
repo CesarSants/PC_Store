@@ -48,3 +48,45 @@ export const addProductToWishlist = async (
         },
     });
 };
+
+export const removeProductFromWishlist = async (
+    userId: string,
+    productId: string,
+    wishlistId?: string,
+) => {
+    let wishlist;
+
+    if (wishlistId) {
+        wishlist = await prismaClient.wishList.findFirstOrThrow({
+            where: {
+                userId: userId,
+                id: wishlistId,
+            },
+        });
+    } 
+    
+    if(!wishlistId) {
+        wishlist = await prismaClient.wishList.findFirst({
+            where: {
+                userId: userId,
+            },
+        });
+    }
+
+    if (!wishlist) {
+        throw new Error("Wishlist não encontrada");
+    }
+
+    await prismaClient.product.update({
+        where: {
+            id: productId,
+        },
+        data: {
+            wishLists: {
+                disconnect: {
+                    id: wishlist.id,
+                },
+            },
+        },
+    });
+};

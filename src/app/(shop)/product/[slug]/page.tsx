@@ -4,6 +4,7 @@ import ProductInfo from "./components/product-info";
 import { computeProductTotalPrice } from "@/helpers/product";
 import ProductList from "@/components/ui/product-list";
 import SectionTitle from "@/components/ui/section-title";
+import ScrollableContainer from "../../(home)/components/ScrollableContainer";
 
 interface ProductDetailsPageProps {
   params: {
@@ -51,8 +52,10 @@ const ProductDetailsPage = async ({
       </div>
 
       <div className="flex flex-col gap-5">
-        <SectionTitle className="pl-5">Produtos Recomendados</SectionTitle>
-        <ProductList products={product.category.products} />
+        <SectionTitle className="pl-5 text-center">Produtos Recomendados</SectionTitle>
+          <ScrollableContainer>
+            <ProductList products={product.category.products} />
+          </ScrollableContainer>
       </div>
     </div>
   );
