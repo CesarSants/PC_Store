@@ -297,7 +297,7 @@ const Cart = () => {
             onClick={handleFinishPurchaseClick}
             disabled={isLoading}
           >
-            Finalizar compra
+            {isLoading ? 'Redirecionando' : 'Finalizar compra'}
           </Button>
         </div>
       )}
