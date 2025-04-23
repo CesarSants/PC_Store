@@ -94,7 +94,7 @@ const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
             onDragStart={preventDragStart}
             draggable="false"
             className={`
-            relative flex px-5 cursor-grab select-none w-full
+            relative flex cursor-grab select-none w-full
             [&::-webkit-scrollbar]:h-2 
             [&::-webkit-scrollbar]:mt-[10px]
             [&::-webkit-scrollbar-thumb]:rounded-full 
@@ -109,7 +109,7 @@ const ScrollableContainer = ({ children }: ScrollableContainerProps) => {
         >
             <div 
             className={`
-                flex gap-4 pb-4
+                flex pb-4
                 ${hasOverflow ? 'min-w-max' : 'w-fit'}
             `} 
             draggable="false"
